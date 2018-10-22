@@ -2,7 +2,7 @@
 	20181022
 	16236. 아기 상어 #기출 #BFS #틀림
     
-    참고 코드: Crocus 님 (https://www.crocus.co.kr/1390)
+	참고 코드: Crocus 님 (https://www.crocus.co.kr/1390)
 	아래 코드는 상기 사이트 운영자에게 모든 저작권이 귀속됩니다.
 	문제 시 즉시 삭제하겠으니 suy.suy.lee@gmail.com으로 연락 주세요.
 */
