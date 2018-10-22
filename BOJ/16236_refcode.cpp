@@ -40,32 +40,34 @@ pair<loc, loc> bfs() {
 
 	vector<pair<int, loc> > shark;	// 결과가 저장될 배열임
 
-	while (!q.empty()) { // queue가 빌 때까지?
+	while (!q.empty()) { // q에는 시작점을 넣어주었음. = 상어의 현재 위치.
+		// bfs를 시작할 시작점을 가져온다. 그렇기 때문에, q에 첫번째에 들어가 있는 상어의 위치가 fetch되게 된다.
 		int y = q.front().first.first; // loc 구조체의 첫번째 요소이므로 sy
 		int x = q.front().first.second; // loc 구조체의 두번째 요소이므로 sx
-		int dist = q.front().second; // 뭔진 잘 모르겠지만 shark까지의 거리
-		q.pop();	// queue를 참조한 후 pop한다. (참조부터 위에 먼저 함)
+		int dist = q.front().second; // dist는 상어까지의 거리이다. 상어에서 상어까지의 거리이므로 0을 뜻한다.
+		q.pop();			// queue를 참조한 후 pop한다. (위에 이미 참조함)
 
-		if (arr[y][x] != 0 && arr[y][x] < sSize)  // sy, sx가 0이 아니고(물고기가 있고), 해당 칸의 사이즈가 sSize (샤크 사이즈) 보다 작은 경우
-			shark.push_back({dist, { y,x } }); // shark에 거리와 좌표를 넣는다?
+		if (arr[y][x] != 0 && arr[y][x] < sSize)  // 해당 칸에 먹이가 있고, 해당 칸의 사이즈가 상어보다 작은 경우 
+												  // ★상어사이즈보다 작은 경우만 이므로, 상어를 나타내는 칸은 여기에 포함되지 않게 됨
+			shark.push_back({dist, { y,x } }); // 상어가 이곳을 방문할 것이다.
 
-		if (visit[y][x])	// 방문한 자리인 경우
+		if (visit[y][x])	// 방문한 자리인 경우, pass한다.
 			continue;
 
 		visit[y][x] = true;	// 상어가 방문한 자리는 방문했음으로 표시함.
 
-		for (int i = 0; i < 4; i++) {
-			int ny = dy[i] + y; // 다음 좌표를 계산한다. 4방향이므로 for문을 돌려 계산한다.
+		for (int i = 0; i < 4; i++) {	// 상어가 방문한 자리에 사방을 계산한다.
+			int ny = dy[i] + y; // 동서남북을 대입하여 사방향으로 1번씩 이동한 좌표를 계산한다. 4방향이므로 for문을 돌려 계산한다.
 			int nx = dx[i] + x;
 
 			if ((0 <= ny && ny < n) && (0 <= nx && nx < n) && arr[ny][nx] <= sSize) 
 			// 1. ny, nx가 네모 판 안에 들어오는 숫자여야 한다.
 			// 2. 이동할 칸이 상어 사이즈보다 작아야 한다 (즉, 상어 사이즈보다 작거나 0이어야 한다)
-				q.push({ {ny, nx}, dist + 1 });	// 다음 칸으로 이동하니까, dist + 1을 넣고, 또 loc을 푸시한다.
+				q.push({ {ny, nx}, dist + 1 });	// 후보지가 될 장소와 dist를 push한다.
 		}
 	}
 
-	if (shark.empty())
+	if (shark.empty()) // 이렇게 했는데, shark가 방문한 곳 밖에 없을 경우, 
 		return { {INF, INF}, {INF, INF} };	// 만약 shark 배열이 empty라면 종료 조건을 리턴한다. 왜 두개씩이지? 언제 푸시됐다고...
 
 	sort(shark.begin(), shark.end());	// 있다고 치고, 처음부터 끝까지 sort한다.
@@ -91,7 +93,7 @@ int main()
 	}
 
 	while (1) {
-		pair<loc, loc> tmp = bfs();	// 리턴값이 뭔가?
+		pair<loc, loc> tmp = bfs();
 		if (tmp.second.first == INF) // dist가 infinity면 break한다. 더이상 탐색할 수 있는 지점이 없다.
 			break;
 
@@ -100,7 +102,7 @@ int main()
 		int dist = tmp.second.first;	// dist
 		int size = tmp.second.second;	// target size
 
-		ans += dist; // 타겟 먹이까지의 dist를 ans에 가산함. 그런데, dist는 어디서 계산하지?
+		ans += dist; // 타겟 먹이까지의 dist를 ans에 가산함. 그런데, dist는 bfs()에서, 한칸 움직일 때마다 +1씩 가산되어 계산되어 있음.
 
 		sy = y;
 		sx = x;	// 먹었으니까 shark의 위치를 방금 먹은 물고기 위치로 치환함.
