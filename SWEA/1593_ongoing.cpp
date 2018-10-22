@@ -21,7 +21,7 @@ int ndir[8][4][2] = {
     { {+1, 0}, {0, -1}, {0, 0}, {0, 0} }, // 6
     { {0, -1}, {-1, 0}, {0, 0}, {0, 0} } }; // 7
     
-int map[50][50] = {0, };
+int map[50][50] = {-1, };
 bool visited[50][50] = {false, };
 int timeleft[50][50] = {0, };
 
@@ -46,7 +46,6 @@ bool isConnected(int src[2], int dst[2])
 void bfs()
 {
     while (!q.empty() && escape_time > 0) {
-        cout << "1\n";
         int cur_i = q.front().first;
         int cur_j = q.front().second;
         cout << "cur_i:" << cur_i << ", cur_j:" << cur_j << endl;
@@ -55,28 +54,40 @@ void bfs()
         int pipe_num = map[cur_i][cur_j];
 
         if (pipe_num == 0) continue;
-        if (timeleft[cur_i][cur_j] == 0) cout << "return!!\n";
+        if (timeleft[cur_i][cur_j] == 0) return;
         visited[cur_i][cur_j] = true;
-        
+		ans++;
+        cout << "ans++\n";
+       
         cout << "p_num:" << pipe_num << '\n';
-        if (pipe_num == 1) {// 4 cases
-            for (int i = 0; i < 4; i++) {
-                cout << "@" << i << endl;
-                int nx = cur_j + ndir[pipe_num][i][X_IDX];
-                int ny = cur_i + ndir[pipe_num][i][Y_IDX];
-                int next_pipe_num = map[ny][nx];
-                
-                if ((nx >= 0) && (nx < n) && (ny >= 0) && (ny < m) && map[ny][nx] != 0 && !visited[ny][nx]) {
-                    //find
-                    if (isConnected(pipe_num, next_pipe_num)) {
-                        cout << "connected to: " << ny << ", " << nx << '\n';
-                        q.push({ny, nx});
-                        timeleft[ny][nx] = timeleft[cur_i][cur_j] - 1;
-                        ans++;
-                    }
-                }
-            }
-        }
+
+		for (int i = 0; i < 4; i++) {
+			int nx = cur_j + ndir[pipe_num][i][X_IDX];
+			int ny = cur_i + ndir[pipe_num][i][Y_IDX];
+            cout << "i:" << i << '\n';
+
+			if ((nx >= 0) && (nx < n) && (ny >= 0) && (ny < m) && map[ny][nx] != 0 && !visited[ny][nx]) {
+				int next_pipe_num = map[ny][nx];
+
+				int x_idx = 0, y_idx = 0;
+				if (ndir[pipe_num][i][X_IDX] != 0) x_idx = -1 * ndir[pipe_num][i][X_IDX];
+				if (ndir[pipe_num][i][Y_IDX] != 0) y_idx = -1 * ndir[pipe_num][i][Y_IDX];
+				
+				int j;
+				for (j = 0; j < 4; j++) {
+					if (ndir[next_pipe_num][j][X_IDX] == x_idx) break;
+					if (ndir[next_pipe_num][j][Y_IDX] == y_idx) break;
+				}
+				if (j != 4) {
+					// push
+					q.push( {ny, nx} );
+					timeleft[ny][nx] = timeleft[cur_i][cur_j] - 1;
+				}
+			}
+		}
+	};
+
+/*
         if (pipe_num != 0 && pipe_num != 1) {
             for (int i = 0; i < 4; i++) {
                 cout << "@B" << i << endl;
@@ -94,10 +105,7 @@ void bfs()
                     }
                 }
             }
-        }
-
-    };
-
+        }*/
     return;
 }
 
@@ -111,6 +119,7 @@ int main()
     
     while (tc_count < tc) {
         cin >> n >> m >> i_loc >> j_loc >> escape_time;
+        cout << "input i_loc: " << i_loc << ", j_loc:" << j_loc << '\n';
 
         for (i = 0; i < n; i++) {
             for (j = 0; j < m; j++) {
@@ -124,7 +133,13 @@ int main()
         bfs();
      
         tc_count++;
-        cout << "#" << tc_count << " " << ans << '\n';
+        cout << "##############" << tc_count << " " << ans << '\n';
+        while (!q.empty()) q.pop();
+        for (i = 0; i < 50; i++) {
+        	for (j = 0; j < 50; j++) {
+            	visited[i][j] = false;   
+            }
+        }
     }
     return 0; // program ends
 }
